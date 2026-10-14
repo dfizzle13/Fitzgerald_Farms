@@ -25,7 +25,6 @@ footer{background:#080907;color:#fff;min-height:185px;padding:52px 6vw 30px;text
 <body>
 <header class="site-header">
   <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="main-nav">☰</button>
-  <a class="brand" href="#home" aria-label="Fitzgerald Farms home"><span class="brand-mark">FF · OHIO</span><span class="brand-name">Fitzgerald Farms</span></a>
   <nav class="nav" id="main-nav" aria-label="Main navigation">
     <a href="#home">Home</a><a href="#about">About</a>
     <a class="brand" href="#home" aria-label="Fitzgerald Farms home"><span class="brand-mark">FF · OHIO</span><span class="brand-name">Fitzgerald Farms</span></a>
@@ -104,6 +103,23 @@ footer{background:#080907;color:#fff;min-height:185px;padding:52px 6vw 30px;text
    if (!email.checkValidity()) { email.reportValidity(); return; }
    document.querySelector('#form-message').textContent = 'Thanks for your interest! Newsletter sign-up is not connected yet. Please check back soon.';
    email.value = '';
+ });
+ // Keep the layout complete if a remote stock image is unavailable.
+ const backupPhoto = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1400&q=80';
+ document.querySelectorAll('img').forEach(img => {
+   img.addEventListener('error', () => {
+     if (img.dataset.fallbackApplied) return;
+     img.dataset.fallbackApplied = 'true';
+     img.src = backupPhoto;
+   });
+ });
+ const backgroundFallback = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=2000&q=80';
+ ['.hero', '.market', '.video-banner'].forEach(selector => {
+   const section = document.querySelector(selector);
+   const image = new Image();
+   image.onerror = () => { section.style.backgroundImage = 'linear-gradient(#0008,#0008), url("' + backgroundFallback + '")'; };
+   const match = getComputedStyle(section).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+   if (match) image.src = match[1];
  });
  document.querySelector('#year').textContent = new Date().getFullYear();
 })();
